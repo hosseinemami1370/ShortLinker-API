@@ -1,3 +1,8 @@
-.history
 node_modules
+dist
+.env
+generated
+coverage
+
+.history
 pnpm-lock.yaml
