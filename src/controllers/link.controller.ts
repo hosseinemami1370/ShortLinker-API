@@ -50,3 +50,14 @@ export async function deleteLinkController(
     message: 'Link deleted successfully'
   })
 }
+
+export async function redirectController(
+    req: Request,
+    res: Response
+  ) {
+    const link = await getLinkByCode(
+      req.params.shortCode
+    )
+  
+    return res.redirect(link.originalUrl)
+  }
