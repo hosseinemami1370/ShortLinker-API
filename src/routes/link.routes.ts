@@ -3,7 +3,8 @@ import { Router } from 'express'
 import {
   createLinkController,
   deleteLinkController,
-  getLinkController
+  getLinkController,
+  redirectController
 } from '../controllers/link.controller'
 
 import { authenticate } from '../middlewares/auth.middleware'
@@ -21,8 +22,27 @@ router.post(
   createLinkController
 )
 
-router.get('/:shortCode', getLinkController)
+/**
+ * Public redirect endpoint
+ * Example:
+ * /api/links/r/google
+ */
+router.get(
+  '/r/:shortCode',
+  redirectController
+)
 
+/**
+ * Get link details
+ */
+router.get(
+  '/:shortCode',
+  getLinkController
+)
+
+/**
+ * Delete owned link
+ */
 router.delete(
   '/:shortCode',
   authenticate,
