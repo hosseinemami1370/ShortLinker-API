@@ -2,6 +2,12 @@ import { prisma } from '../database/prisma'
 
 import { generateShortCode } from '../utils/short-code'
 import { RESERVED_SHORT_CODES } from '../constants/reserved-routes'
+import {
+  createLink,
+  deleteLink,
+  findLinkByCode,
+  incrementClicks
+} from '../repositories/link.repository'
 
 type CreateLinkInput = {
   originalUrl: string
@@ -15,22 +21,18 @@ export async function createShortLink(
   const shortCode =
     data.shortCode || generateShortCode()
 
-  const existingLink = await prisma.link.findUnique({
-    where: {
-      shortCode
-    }
-  })
+  const existingLink = await findLinkByCode(
+    shortCode
+  )
 
   if (existingLink) {
     throw new Error('Short code already exists')
   }
 
-  return prisma.link.create({
-    data: {
-      originalUrl: data.originalUrl,
-      shortCode,
-      ownerId: data.userId
-    }
+  return createLink({
+    originalUrl: data.originalUrl,
+    shortCode,
+    ownerId: data.userId
   })
 }
 
@@ -44,26 +46,13 @@ export async function getLinkByCode(
   ) {
     throw new Error('Short code is reserved')
   }
-  const link = await prisma.link.findUnique({
-    where: {
-      shortCode
-    }
-  })
+  const link = await findLinkByCode(shortCode)
 
   if (!link) {
     throw new Error('Link not found')
   }
 
-  await prisma.link.update({
-    where: {
-      id: link.id
-    },
-    data: {
-      clicks: {
-        increment: 1
-      }
-    }
-  })
+  await incrementClicks(link.id)
 
   return link
 }
@@ -72,11 +61,7 @@ export async function removeLink(
   shortCode: string,
   userId: string
 ) {
-  const link = await prisma.link.findUnique({
-    where: {
-      shortCode
-    }
-  })
+  const link = await findLinkByCode(shortCode)
 
   if (!link) {
     throw new Error('Link not found')
@@ -86,9 +71,5 @@ export async function removeLink(
     throw new Error('Forbidden')
   }
 
-  return prisma.link.delete({
-    where: {
-      id: link.id
-    }
-  })
+  return deleteLink(link.id)
 }
