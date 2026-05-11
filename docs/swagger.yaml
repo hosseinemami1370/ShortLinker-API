@@ -1,0 +1,28 @@
+openapi: 3.0.0
+
+info:
+  title: ShortLinker API
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:8080
+
+paths:
+  /api/auth/signup:
+    post:
+      summary: Register a new user
+
+  /api/auth/login:
+    post:
+      summary: Login user
+
+  /api/links:
+    post:
+      summary: Create short link
+
+  /api/links/{shortCode}:
+    get:
+      summary: Get link information
+
+    delete:
+      summary: Delete a short link
