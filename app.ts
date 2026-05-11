@@ -9,7 +9,11 @@ import userRoutes from './routes/user.routes'
 
 import { errorHandler } from './middlewares/error.middleware'
 
+import { swaggerMiddleware } from './config/swagger'
+
 export const app = express()
+
+app.use('/docs', swaggerMiddleware)
 
 app.use(cors())
 
