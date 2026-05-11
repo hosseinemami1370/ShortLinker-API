@@ -5,6 +5,11 @@ import {
   verifyPassword
 } from '../utils/hash'
 
+import {
+  createUser,
+  findUserByEmail
+} from '../repositories/user.repository'
+
 import { createAccessToken } from '../utils/token'
 
 type RegisterInput = {
@@ -19,7 +24,7 @@ type LoginInput = {
 }
 
 export async function registerUser(data: RegisterInput) {
-  const existingUser = await prisma.user.findUnique({
+  const existingUser = await findUserByEmail({
     where: {
       email: data.email
     }
@@ -33,7 +38,7 @@ export async function registerUser(data: RegisterInput) {
     data.password
   )
 
-  const user = await prisma.user.create({
+  const user = await createUser({
     data: {
       email: data.email,
       password: hashedPassword,
@@ -53,7 +58,7 @@ export async function registerUser(data: RegisterInput) {
 }
 
 export async function loginUser(data: LoginInput) {
-  const user = await prisma.user.findUnique({
+  const user = await findUserByEmail({
     where: {
       email: data.email
     }
