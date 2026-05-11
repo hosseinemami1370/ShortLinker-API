@@ -1,6 +1,7 @@
 import { prisma } from '../database/prisma'
 
 import { generateShortCode } from '../utils/short-code'
+import { RESERVED_SHORT_CODES } from '../constants/reserved-routes'
 
 type CreateLinkInput = {
   originalUrl: string
@@ -36,6 +37,13 @@ export async function createShortLink(
 export async function getLinkByCode(
   shortCode: string
 ) {
+  if (
+    RESERVED_SHORT_CODES.includes(
+      shortCode.toLowerCase()
+    )
+  ) {
+    throw new Error('Short code is reserved')
+  }
   const link = await prisma.link.findUnique({
     where: {
       shortCode
